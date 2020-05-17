@@ -2,7 +2,7 @@ from datetime import datetime
 import os
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import broadcast
-from pyspark.sql.functions import udf, col
+from pyspark.sql.functions import udf
 from pyspark.sql.functions import year, month, dayofmonth, hour, weekofyear, date_format
 from pyspark.sql.types import TimestampType
 from pyspark.sql.functions import desc
@@ -190,7 +190,7 @@ def process_log_data(spark, input_data, output_data):
         output_data -- S3 Bucket where the file will be written
     '''
     # get filepath to log data file
-    log_data = os.path.join(input_data, 'log_data')
+    log_data = os.path.join(input_data, 'log_data/*/*/*.json')
 
     # read log data file
     df = spark.read.json(log_data)
