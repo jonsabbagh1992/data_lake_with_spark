@@ -119,8 +119,7 @@ def extract_songplay_data(df, song_df_bc):
 
     Return a Spark Dataframe
     '''
-    songplays_cols = ['id', 'start_time', 'userId', 'level', 'song_id', 'artist_id', 'sessionId', 'location', 'userAgent',
-                      year('start_time').alias('year'), month('start_time').alias('month')]
+    songplays_cols = ['id', 'start_time', 'userId', 'level', 'song_id', 'artist_id', 'sessionId', 'location', 'userAgent']
     songplays_table = df.join(song_df_bc, (df.song == song_df_bc.title) & (df.artist == song_df_bc.artist_name) & (df.length == song_df_bc.duration), how='left') \
                         .withColumn("id", monotonically_increasing_id()) \
                         .select(songplays_cols)
@@ -214,8 +213,7 @@ def process_log_data(spark, input_data, output_data):
     # process songplays data
     song_df_bc = fetch_song_data_with_artist_name(spark, output_data, 'song_table/song_data.parquet', 'artist_table/artist_data.parquet')
     songplays_table = extract_songplay_data(df, song_df_bc)
-    partition_cols = ['year', 'month']
-    write_parquet_file_with_partition(songplays_table, output_data, 'songplay_table/songplay_data.parquet', partition_cols)
+    write_parquet_file_no_partition(songplays_table, output_data, 'songplay_table/songplay_data.parquet')
 
 def main():
     spark = create_spark_session()
