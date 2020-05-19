@@ -19,39 +19,15 @@ def create_spark_session():
     return spark
 
 def extract_songs_table(df):
-    '''
-    Helper function to extract the songs dimension table from songs data
-
-    Arguments:
-        df -- songs dataframe
-
-    Returns a Spark Dataframe
-    '''
     song_cols = ['song_id', 'title', 'artist_id', 'year', 'duration']
     return df.select(song_cols).dropDuplicates()
 
 def extract_artists_table(df):
-    '''
-    Helper function to extract the artists dimension table from songs data
-
-    Arguments:
-        df -- songs dataframe
-
-    Returns a Spark Dataframe
-    '''
     artist_cols = ['artist_id', 'artist_name', 'artist_location',
                    'artist_latitude', 'artist_longitude']
     return df.select(artist_cols).dropDuplicates()
 
 def extract_users_table(df):
-    '''
-    Helper function to extract the users dimension table from logs data
-
-    Arguments:
-        df -- logs dataframe
-
-    Returns a Spark Dataframe
-    '''
     user_cols = ['userId', 'firstName', 'lastName', 'gender', 'level', 'ts']
 
     #Sorted by timestamp to get the latest entry in the dataset
@@ -63,14 +39,6 @@ def extract_users_table(df):
     return users_table
 
 def extract_time_table(df):
-    '''
-    Helper function to extract the time dimension table from logs data
-
-    Arguments:
-        df -- logs dataframe
-
-    Return a Spark Dataframe
-    '''
     time_table = df.select(
                         'start_time',
                         hour('start_time').alias('hour'),
@@ -110,15 +78,6 @@ def fetch_song_data_with_artist_name(spark, output_data, song_data_location, art
     return song_df_bc
 
 def extract_songplay_data(df, song_df_bc):
-    '''
-    Helper function to extract the songplay fact table from logs data
-
-    Arguments:
-        df -- logs Dataframe
-        song_df_bc -- song dimension table
-
-    Return a Spark Dataframe
-    '''
     songplays_cols = ['id', 'start_time', 'userId', 'level', 'song_id', 'artist_id', 'sessionId', 'location', 'userAgent']
     songplays_table = df.join(song_df_bc, (df.song == song_df_bc.title) & (df.artist == song_df_bc.artist_name) & (df.length == song_df_bc.duration), how='left') \
                         .withColumn("id", monotonically_increasing_id()) \
